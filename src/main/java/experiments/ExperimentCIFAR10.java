@@ -1,31 +1,28 @@
 package experiments;
 
 import nl.tue.s2id90.dl.NN.Model;
-import nl.tue.s2id90.dl.NN.activation.RELU;
 import nl.tue.s2id90.dl.NN.initializer.Gaussian;
-import nl.tue.s2id90.dl.NN.layer.*;
+import nl.tue.s2id90.dl.NN.layer.Flatten;
+import nl.tue.s2id90.dl.NN.layer.InputLayer;
+import nl.tue.s2id90.dl.NN.layer.Layer;
+import nl.tue.s2id90.dl.NN.layer.OutputSoftmax;
 import nl.tue.s2id90.dl.NN.loss.CrossEntropy;
-import nl.tue.s2id90.dl.NN.loss.MSE;
 import nl.tue.s2id90.dl.NN.optimizer.Optimizer;
 import nl.tue.s2id90.dl.NN.optimizer.SGD;
 import nl.tue.s2id90.dl.NN.optimizer.update.MomentumGradientDescent;
-import nl.tue.s2id90.dl.NN.tensor.Tensor;
 import nl.tue.s2id90.dl.NN.tensor.TensorShape;
-import nl.tue.s2id90.dl.NN.transform.DataTransform;
 import nl.tue.s2id90.dl.NN.validate.Classification;
-import nl.tue.s2id90.dl.NN.validate.Regression;
 import nl.tue.s2id90.dl.experiment.BatchResult;
 import nl.tue.s2id90.dl.experiment.GUIExperiment;
-import nl.tue.s2id90.dl.input.GenerateFunctionData;
+import nl.tue.s2id90.dl.input.Cifar10Reader;
 import nl.tue.s2id90.dl.input.InputReader;
-import nl.tue.s2id90.dl.input.MNISTReader;
 import nl.tue.s2id90.dl.javafx.FXGUI;
 import nl.tue.s2id90.dl.javafx.ShowCase;
-import org.nd4j.linalg.api.ops.impl.layers.convolution.MaxPooling2D;
 
 import java.io.IOException;
+import java.util.List;
 
-public class ExperimentZalando extends GUIExperiment {
+public class ExperimentCIFAR10 extends GUIExperiment {
     // (hyper) parameters
     int batchSize = 32;
     int epochs = 5;
@@ -39,18 +36,13 @@ public class ExperimentZalando extends GUIExperiment {
         this.learningRate = learningRate;
 
         // read input and print some information on the data
-        InputReader reader = MNISTReader.fashion(batchSize);
-
-//        DataTransform meanSub = new MeanSubtraction();
-//        meanSub.fit(reader.getTrainingData());
-//        meanSub.transform(reader.getTrainingData());
-//        meanSub.transform(reader.getValidationData(1000));
+        InputReader reader = new Cifar10Reader(batchSize);
 
         System.out.println(" Reader info :\n" + reader.toString());
 
-        String[] label = {"t-shirt", "trouser", "Pullover", "Dress", "Coat", "Sandal", "Shirt", "Sneaker", "Bag", "boot"};
+        List<String> label = Cifar10Reader.getLabelsAsString();
 
-        showCase = new ShowCase(i -> label[i]);
+        showCase = new ShowCase(i -> label.get(i));
 
         FXGUI.getSingleton().addTab("Show case", showCase.getNode());
         showCase.setItems(reader.getValidationData(100));
@@ -86,7 +78,7 @@ public class ExperimentZalando extends GUIExperiment {
     }
 
     public static void main(String[] args) throws IOException {
-        new ExperimentZalando().go(32, 0.1);
+        new ExperimentCIFAR10().go(32, 0.1);
     }
 
     @Override
