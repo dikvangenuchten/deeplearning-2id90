@@ -7,11 +7,16 @@ import org.nd4j.linalg.factory.Nd4j;
 import static org.nd4j.linalg.ops.transforms.Transforms.sqrt;
 
 public class ADADELTA implements UpdateFunction {
-    private double decay = 0.90;
-    private double e = 1;
-    private int counter = 0;
+    private double decay;
+    private double e;
     private INDArray gradientAccumulator;
     private INDArray deltaXAccumulator;
+
+
+    public ADADELTA(double decay, double e) {
+        this.decay = decay;
+        this.e = e;
+    }
 
     /**
      * Does a gradient descent step with factor minus learningRate and corrected for batchSize.
@@ -26,24 +31,24 @@ public class ADADELTA implements UpdateFunction {
             gradientAccumulator = Nd4j.zeros(gradient.shape());
             deltaXAccumulator = Nd4j.zeros(gradient.shape());
         }
-        System.out.println(counter++);
-        gradientAccumulator = accumulate(gradientAccumulator, gradient);
-        System.out.println("Delta X acc" + RMS(deltaXAccumulator));
-        System.out.println("gradient acc" + RMS(gradientAccumulator));
-        INDArray RMSdiv = RMS(deltaXAccumulator).div(RMS(gradientAccumulator));
-        INDArray deltaX = RMSdiv.mul(gradient).mul(-1);
-        deltaXAccumulator = accumulate(deltaXAccumulator, deltaX);
-        System.out.println(deltaX);
-        Nd4j.getBlasWrapper().level1().axpy(value.length(), 1, deltaX, value);
+        // Accumulate and slide gradient
+        gradientAccumulator.muli(decay);
+        gradientAccumulator.addi(gradient.mul(gradient).mul(1 - decay));
+
+        // Caclulate Delta x
+        INDArray deltaX = gradient.div(RMS(gradientAccumulator)).mul(RMS(deltaXAccumulator)).mul(-1);
+
+        // Accumulate and slide deltaX
+        deltaXAccumulator.muli(decay);
+        deltaXAccumulator.addi(deltaX.mul(deltaX).mul(1 - decay));
+
+        // Update weights
+        double factor = 0.1 / batchSize;
+        Nd4j.getBlasWrapper().level1().axpy(value.length(), factor, deltaX, value);
         // value <-- value + factor * gradient
     }
 
-    private INDArray RMS(INDArray x){
-        return sqrt(x.add(this.e));
-    }
-
-    private INDArray accumulate(INDArray accumulator, INDArray value){
-        INDArray sqrValue = value.mul(value);
-        return accumulator.mul(decay).add(sqrValue.mul(1 - decay));
+    private INDArray RMS(INDArray x) {
+        return sqrt(x.add(e));
     }
 }

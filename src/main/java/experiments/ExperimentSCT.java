@@ -10,6 +10,7 @@ import nl.tue.s2id90.dl.NN.loss.CrossEntropy;
 import nl.tue.s2id90.dl.NN.optimizer.Optimizer;
 import nl.tue.s2id90.dl.NN.optimizer.SGD;
 import nl.tue.s2id90.dl.NN.optimizer.update.ADADELTA;
+import nl.tue.s2id90.dl.NN.optimizer.update.ADAGRAD;
 import nl.tue.s2id90.dl.NN.optimizer.update.L2Decay;
 import nl.tue.s2id90.dl.NN.optimizer.update.MomentumGradientDescent;
 import nl.tue.s2id90.dl.NN.tensor.Tensor;
@@ -59,7 +60,7 @@ public class ExperimentSCT extends GUIExperiment {
                 .model(model)
                 .validator(new Classification())
                 .learningRate(learningRate)
-                .updateFunction(() -> new L2Decay(ADADELTA::new,0.0001f))
+                .updateFunction(() -> new L2Decay(() -> new ADADELTA(0.9, 0.1),0.0001f))
                 .build();
 
         trainModel(sgd, reader, epochs, 0);
@@ -86,7 +87,7 @@ public class ExperimentSCT extends GUIExperiment {
     }
 
     public static void main(String[] args) throws IOException {
-        new ExperimentZalando().go(32, 0.1);
+        new ExperimentSCT().go(32, 0.1);
     }
 
     @Override
