@@ -68,16 +68,16 @@ public class ExperimentCIFAR10 extends GUIExperiment {
     Model createModel(TensorShape inputs, TensorShape outputs) {
         TensorShape hiddenShape = inputs;
         Model model = new Model(new InputLayer(" In ", inputs, true));
-        hiddenShape = addLayer(model, new Convolution2D("Conv 1", hiddenShape, 3, 8, new LRELU()));
-        hiddenShape = addLayer(model, new Convolution2D("Conv 2", hiddenShape, 3, 8, new LRELU()));
+        hiddenShape = addLayer(model, new Convolution2D("Conv 1", hiddenShape, 3, 64, new LRELU()));
+        hiddenShape = addLayer(model, new Convolution2D("Conv 2", hiddenShape, 3, 64, new LRELU()));
         hiddenShape = addLayer(model, new PoolMax2D("Pool 1", hiddenShape, 2));
-        hiddenShape = addLayer(model, new Convolution2D("Conv 3", hiddenShape, 3, 8, new LRELU()));
-        hiddenShape = addLayer(model, new Convolution2D("Conv 4", hiddenShape, 3, 8, new LRELU()));
+        hiddenShape = addLayer(model, new Convolution2D("Conv 3", hiddenShape, 3, 128, new LRELU()));
+        hiddenShape = addLayer(model, new Convolution2D("Conv 4", hiddenShape, 3, 128, new LRELU()));
         hiddenShape = addLayer(model, new PoolMax2D("Pool 2", hiddenShape, 2));
         hiddenShape = addLayer(model, new Flatten("Flatten 1", hiddenShape));
-        hiddenShape = addLayer(model, new FullyConnected("FC 1", hiddenShape, 256, new RELU()));
-        hiddenShape = addLayer(model, new FullyConnected("FC 1", hiddenShape, 256, new RELU()));
-        hiddenShape = addLayer(model, new FullyConnected("FC 1", hiddenShape, 256, new RELU()));
+        hiddenShape = addLayer(model, new FullyConnected("FC 1", hiddenShape, 1024, new RELU()));
+        hiddenShape = addLayer(model, new FullyConnected("FC 1", hiddenShape, 512, new RELU()));
+        hiddenShape = addLayer(model, new FullyConnected("FC 1", hiddenShape, 512, new RELU()));
         model.addLayer(new OutputSoftmax("output", hiddenShape, outputs.getNeuronCount(), new CrossEntropy()));
         return model;
     }
