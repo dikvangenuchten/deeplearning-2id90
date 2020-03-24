@@ -9,7 +9,7 @@ import java.util.List;
 
 public class hyperParameterFinder {
     public static void main(String[] args) throws IOException {
-        int[] batchSizes = {16, 32, 64, 128};
+        int[] batchSizes = {16, 32, 64};
         double[] learningRates = {0.1, 0.05, 0.01};
         List<BatchResult> batchResults = new ArrayList<>();
         for (double learningRate : learningRates) {

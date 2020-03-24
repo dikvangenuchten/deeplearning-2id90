@@ -19,7 +19,7 @@ public class ADADELTA implements UpdateFunction {
     }
 
     /**
-     * Does a gradient descent step with factor minus learningRate and corrected for batchSize.
+     * Does a gradient descent step with ADADELTA.
      *
      * @param value
      * @param isBias

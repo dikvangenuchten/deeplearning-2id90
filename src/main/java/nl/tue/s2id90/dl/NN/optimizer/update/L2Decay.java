@@ -15,7 +15,7 @@ public class L2Decay implements UpdateFunction {
     }
 
     /**
-     * Does a gradient descent step with factor minus learningRate and corrected for batchSize.
+     * Does a gradient step with l2decay
      *
      * @param value
      * @param isBias

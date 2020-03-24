@@ -13,7 +13,7 @@ public class ADAGRAD implements UpdateFunction {
     private INDArray deltaX;
 
     /**
-     * Does a gradient descent step with factor minus learningRate and corrected for batchSize.
+     * Does a gradient descent step with ADAGRAD.
      *
      * @param value
      * @param isBias

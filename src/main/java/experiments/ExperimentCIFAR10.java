@@ -27,7 +27,7 @@ import java.util.List;
 public class ExperimentCIFAR10 extends GUIExperiment {
     // (hyper) parameters
     int batchSize = 32;
-    int epochs = 5;
+    int epochs = 10;
     double learningRate = 0.1;
     BatchResult localResult;
     ShowCase showCase;

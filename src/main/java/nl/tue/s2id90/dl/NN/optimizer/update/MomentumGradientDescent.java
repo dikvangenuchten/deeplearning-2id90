@@ -12,7 +12,7 @@ public class MomentumGradientDescent implements UpdateFunction {
     double momentumUpdate = 0.5;
 
     /**
-     * Does a gradient descent step with factor minus learningRate and corrected for batchSize.
+     * Does a gradient descent step with momentum
      *
      * @param value
      * @param isBias
