@@ -25,9 +25,8 @@ public class L2Decay implements UpdateFunction {
     public void update(INDArray value, boolean isBias, double learningRate, int batchSize, INDArray gradient) {
         f.update(value, isBias, learningRate, batchSize, gradient);
         if (!isBias) {
-            double factor = -(learningRate / batchSize);
             INDArray l2gradient = value.mul(-decay);
-            Nd4j.getBlasWrapper().level1().axpy(value.length(), factor, l2gradient, value);
+            Nd4j.getBlasWrapper().level1().axpy(value.length(), 1, l2gradient, value);
             // value <-- value + factor * gradient
         }
     }

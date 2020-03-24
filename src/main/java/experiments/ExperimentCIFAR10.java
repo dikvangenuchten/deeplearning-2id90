@@ -8,7 +8,9 @@ import nl.tue.s2id90.dl.NN.layer.*;
 import nl.tue.s2id90.dl.NN.loss.CrossEntropy;
 import nl.tue.s2id90.dl.NN.optimizer.Optimizer;
 import nl.tue.s2id90.dl.NN.optimizer.SGD;
+import nl.tue.s2id90.dl.NN.optimizer.update.ADADELTA;
 import nl.tue.s2id90.dl.NN.optimizer.update.GradientDescent;
+import nl.tue.s2id90.dl.NN.optimizer.update.L2Decay;
 import nl.tue.s2id90.dl.NN.optimizer.update.MomentumGradientDescent;
 import nl.tue.s2id90.dl.NN.tensor.TensorShape;
 import nl.tue.s2id90.dl.NN.validate.Classification;
@@ -36,7 +38,7 @@ public class ExperimentCIFAR10 extends GUIExperiment {
         this.learningRate = learningRate;
 
         // read input and print some information on the data
-        InputReader reader = new Cifar10Reader(batchSize);
+        InputReader reader = new Cifar10Reader(batchSize, 5);
 
         System.out.println(" Reader info :\n" + reader.toString());
 
@@ -57,7 +59,7 @@ public class ExperimentCIFAR10 extends GUIExperiment {
                 .model(model)
                 .validator(new Classification())
                 .learningRate(learningRate)
-                .updateFunction(GradientDescent::new)
+                .updateFunction(() -> new L2Decay(() -> new ADADELTA(0.9, 0.1), 0.00001f))
                 .build();
 
         trainModel(sgd, reader, epochs, 0);
@@ -88,7 +90,7 @@ public class ExperimentCIFAR10 extends GUIExperiment {
     }
 
     public static void main(String[] args) throws IOException {
-        new ExperimentCIFAR10().go(32, 0.1);
+        new ExperimentCIFAR10().go(64, 0.1);
     }
 
     @Override

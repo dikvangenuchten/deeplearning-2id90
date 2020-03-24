@@ -14,7 +14,7 @@ public class hyperParameterFinder {
         List<BatchResult> batchResults = new ArrayList<>();
         for (double learningRate : learningRates) {
             for (int batchSize : batchSizes) {
-                ExperimentSCT exp = new ExperimentSCT();
+                ExperimentCIFAR10 exp = new ExperimentCIFAR10();
                 BatchResult result = exp.go(batchSize, learningRate);
                 batchResults.add(result);
                 System.out.println("RESULT: " + result.validation + " batchSize: " + batchSize + " lr: " + learningRate);
