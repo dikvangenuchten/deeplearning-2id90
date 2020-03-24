@@ -55,12 +55,14 @@ public class ExperimentSCT extends GUIExperiment {
 
         Model model = createModel(inputs, outputs);
 
+        System.out.println(model.toString());
+
         model.initialize(new Gaussian());
         Optimizer sgd = SGD.builder()
                 .model(model)
                 .validator(new Classification())
                 .learningRate(learningRate)
-                .updateFunction(() -> new L2Decay(() -> new ADADELTA(0.9, 0.1),0.0001f))
+                .updateFunction(() -> new L2Decay(MomentumGradientDescent::new,0.0001f))
                 .build();
 
         trainModel(sgd, reader, epochs, 0);

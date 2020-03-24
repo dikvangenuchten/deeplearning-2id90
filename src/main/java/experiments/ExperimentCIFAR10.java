@@ -1,14 +1,14 @@
 package experiments;
 
 import nl.tue.s2id90.dl.NN.Model;
+import nl.tue.s2id90.dl.NN.activation.LRELU;
+import nl.tue.s2id90.dl.NN.activation.RELU;
 import nl.tue.s2id90.dl.NN.initializer.Gaussian;
-import nl.tue.s2id90.dl.NN.layer.Flatten;
-import nl.tue.s2id90.dl.NN.layer.InputLayer;
-import nl.tue.s2id90.dl.NN.layer.Layer;
-import nl.tue.s2id90.dl.NN.layer.OutputSoftmax;
+import nl.tue.s2id90.dl.NN.layer.*;
 import nl.tue.s2id90.dl.NN.loss.CrossEntropy;
 import nl.tue.s2id90.dl.NN.optimizer.Optimizer;
 import nl.tue.s2id90.dl.NN.optimizer.SGD;
+import nl.tue.s2id90.dl.NN.optimizer.update.GradientDescent;
 import nl.tue.s2id90.dl.NN.optimizer.update.MomentumGradientDescent;
 import nl.tue.s2id90.dl.NN.tensor.TensorShape;
 import nl.tue.s2id90.dl.NN.validate.Classification;
@@ -57,7 +57,7 @@ public class ExperimentCIFAR10 extends GUIExperiment {
                 .model(model)
                 .validator(new Classification())
                 .learningRate(learningRate)
-                .updateFunction(MomentumGradientDescent::new)
+                .updateFunction(GradientDescent::new)
                 .build();
 
         trainModel(sgd, reader, epochs, 0);
@@ -66,8 +66,18 @@ public class ExperimentCIFAR10 extends GUIExperiment {
     }
 
     Model createModel(TensorShape inputs, TensorShape outputs) {
+        TensorShape hiddenShape = inputs;
         Model model = new Model(new InputLayer(" In ", inputs, true));
-        TensorShape hiddenShape = addLayer(model, new Flatten("Flatten 1", inputs));
+        hiddenShape = addLayer(model, new Convolution2D("Conv 1", hiddenShape, 3, 8, new LRELU()));
+        hiddenShape = addLayer(model, new Convolution2D("Conv 2", hiddenShape, 3, 8, new LRELU()));
+        hiddenShape = addLayer(model, new PoolMax2D("Pool 1", hiddenShape, 2));
+        hiddenShape = addLayer(model, new Convolution2D("Conv 3", hiddenShape, 3, 8, new LRELU()));
+        hiddenShape = addLayer(model, new Convolution2D("Conv 4", hiddenShape, 3, 8, new LRELU()));
+        hiddenShape = addLayer(model, new PoolMax2D("Pool 2", hiddenShape, 2));
+        hiddenShape = addLayer(model, new Flatten("Flatten 1", hiddenShape));
+        hiddenShape = addLayer(model, new FullyConnected("FC 1", hiddenShape, 256, new RELU()));
+        hiddenShape = addLayer(model, new FullyConnected("FC 1", hiddenShape, 256, new RELU()));
+        hiddenShape = addLayer(model, new FullyConnected("FC 1", hiddenShape, 256, new RELU()));
         model.addLayer(new OutputSoftmax("output", hiddenShape, outputs.getNeuronCount(), new CrossEntropy()));
         return model;
     }
